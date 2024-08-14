@@ -5,8 +5,8 @@
 #Date: 04/08/2024
 
 #imports
-import bike_db.py
-import log_config.py
+import bike_db
+import log_config
 import os
 import csv
 from error_handling import handle_errors
@@ -54,6 +54,22 @@ class DatabaseUtils:
         LogUtils.logger.info(f"Table keys retrieved for {table_name}")
         return keys
 
+    # convert row tuple to dictionary
+    @staticmethod
+    @handle_errors("Convert row to dictionary")
+    def row_to_dict(table_name, row):
+        keys = DatabaseUtils.db.get_table_keys(table_name)
+        return dict(zip(keys, row))
+
+    #get row from table
+    @staticmethod
+    @handle_errors("Row retrieval")
+    def get_row(table_name, id):
+        #gaurd clause to check if id is a list
+        if isinstance(id, list): id = id[0]
+        row = DatabaseUtils.db.get_entry(table_name, id)
+        LogUtils.logger.info(f"Row retrieved from {table_name}")
+        return DatabaseUtils.row_to_dict(table_name, row)
     #count rows in table
     @staticmethod
     @handle_errors("Row counting")
@@ -67,15 +83,16 @@ class DatabaseUtils:
     @handle_errors("keys and table headings comparison")
     def key_and_table_heading_compare_dic(table_name, data):
         table_keys = DatabaseUtils.db.get_table_keys(table_name)
-        return data.keys() == table_keys
+        return list(data.keys()) == table_keys
 
     #add row to table, ensure keys match table headers
     @staticmethod
     @handle_errors("Row addition")
     def add_row(table_name, data):
         if not DatabaseUtils.key_and_table_heading_compare_dic(table_name, data): return None
-        DatabaseUtils.db.add_entry(table_name, data)
+        new_id = DatabaseUtils.db.add_entry(table_name, data)
         LogUtils.logger.info(f"Row added to {table_name}")
+        return new_id
 
     #delete row from table
     @staticmethod
@@ -87,9 +104,9 @@ class DatabaseUtils:
     #edit row in table
     @staticmethod
     @handle_errors("Row editing")
-    def edit_row(table_name, id, data):
+    def edit_row(table_name, data):
         if not DatabaseUtils.key_and_table_heading_compare_dic(table_name, data): return None
-        DatabaseUtils.db.edit_row(table_name, id, data)
+        DatabaseUtils.db.change_entry(table_name, data)
         LogUtils.logger.info(f"Row edited in {table_name}")
 
     #compare csv headers to table headers
@@ -186,3 +203,12 @@ class DatabaseUtils:
         #export all table headers
         for table in tables: DatabaseUtils.export_all_table_headers(table, dir+f'{table}.csv')
         LogUtils.logger.info("All table headers exported as CSV")
+    
+    # get all ids from a table
+    @staticmethod
+    @handle_errors("Get all ids")
+    def get_ids(table_name):
+        ids = DatabaseUtils.db.get_ids(table_name)
+        LogUtils.logger.info(f"IDs retrieved from {table_name}")
+        return ids
+    

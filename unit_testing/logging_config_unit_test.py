@@ -2,6 +2,13 @@ import unittest
 from log_config import LogConfig
 import logging
 
+import sys
+import os
+# Add the parent directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import utils
+
+
 class TestLogConfig(unittest.TestCase):
     def setUp(self):
         self.log_config = LogConfig()

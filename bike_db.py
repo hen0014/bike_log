@@ -28,7 +28,7 @@ class BikeDatabase:
         #create db connection
         self.conn = sqlite3.connect(self.db_file)
         self.c = self.conn.cursor()
-        self.create_table()
+        self.create_table(self.get_tables())
     
     #get tables from json file database_config.json
     def get_tables(self):
@@ -78,6 +78,14 @@ class BikeDatabase:
             data_dict[row[0]] = dict(zip(headings, row))
         return data_dict
     
+    #retreive all ids from a table
+    def get_ids(self, table):
+        self.c.execute(f"SELECT id FROM {table}")
+        ids = self.c.fetchall()
+        return ids
+
+
+
     #delete an entry from a table
     def delete_entry(self, table, id):
         self.c.execute(f"DELETE FROM {table} WHERE id = :id", {'id': id})
@@ -123,8 +131,9 @@ class BikeDatabase:
     def add_entry(self, table, data):
         if self.is_dict(data):
             data['id'] = str(uuid.uuid4())
-            self.c.execute(f"INSERT INTO {table} VALUES ({', '.join(['?']*len(data))})", data)
+            self.c.execute(f"INSERT INTO {table} VALUES ({', '.join(['?']*len(data))})", tuple(data.values()))
             self.conn.commit()
+            return [data['id']]
         else:
             print('Invalid data')
             return 1
@@ -162,4 +171,6 @@ class BikeDatabase:
                     search_results.append(dict(zip(headings, row)))
         return search_results
 
-    
+if __name__ == '__main__':
+    db = BikeDatabase()
+    db.close()
