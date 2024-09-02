@@ -84,8 +84,6 @@ class BikeDatabase:
         ids = self.c.fetchall()
         return ids
 
-
-
     #delete an entry from a table
     def delete_entry(self, table, id):
         self.c.execute(f"DELETE FROM {table} WHERE id = :id", {'id': id})

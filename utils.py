@@ -9,6 +9,7 @@ import bike_db
 import log_config
 import os
 import csv
+import menu
 from error_handling import handle_errors
 
 import log_config
@@ -211,4 +212,79 @@ class DatabaseUtils:
         ids = DatabaseUtils.db.get_ids(table_name)
         LogUtils.logger.info(f"IDs retrieved from {table_name}")
         return ids
+
+class MenuUtils:
+    # setup menu
+    menu = menu.user_terminal_input()
+
+    #get menu hierarchy
+    @staticmethod
+    @handle_errors("Menu hierarchy")
+    def get_menu_hierarchy():
+        menu_hierarchy = MenuUtils.menu.get_menu_hierarchy()
+        LogUtils.logger.info("Menu hierarchy retrieved")
+        return menu_hierarchy
+
+    #get user input
+    @staticmethod
+    @handle_errors("User input")
+    def get_user_input():
+        MenuUtils.menu.get_user_input()
+        LogUtils.logger.info("User input retrieved")
+        return MenuUtils.get_user_input_values()
+
+    #get user input values
+    @staticmethod
+    @handle_errors("User input values")
+    def get_user_input_values():
+        values = MenuUtils.menu.user_input_values()
+        LogUtils.logger.info("User input values retrieved")
+        return values
+
+    #convert value to name
+    @staticmethod
+    @handle_errors("Value to name conversion")
+    def convert_val_to_name(menu_track, menu):
+        list = []
+        MenuUtils.menu.convert_val_to_name(menu_track, menu, list)
+        LogUtils.logger.info("Value converted to name")
+        return list
     
+    #convert user input to name list
+    @staticmethod
+    @handle_errors("User input to name conversion")
+    def convert_user_input_to_name(menu):
+        values = MenuUtils.get_user_input_values()
+        return MenuUtils.convert_val_to_name(values, menu)
+    
+    #crawl through each menu item and print like the following
+    # item 1
+    #  - subitem 1
+    @staticmethod
+    @handle_errors("Menu crawl")
+    def menu_crawl():
+        def crawl(menu_list, depth=0):
+            for count,item in enumerate(menu_list):
+                if depth >= 1 and len(menu_list) != count:
+                    print("   "*depth + "├─" + item['name'])
+                else:
+                    print("   "*depth + "└─" + item['name'])
+                if 'submenus' in item:
+                    crawl(item['submenus'], depth + 1)
+        crawl(MenuUtils.get_menu_hierarchy())
+
+# quick test
+if __name__ == "__main__":
+    DatabaseUtils.connect()
+    MenuUtils.menu_crawl()
+    DatabaseUtils.close_connection()
+    LogUtils.logger.info("Program complete")
+
+    #lets get the user input
+    input = MenuUtils.get_user_input()
+    print(input)
+    #show list as names
+    print(MenuUtils.convert_user_input_to_name(MenuUtils.get_menu_hierarchy()))
+    
+
+
