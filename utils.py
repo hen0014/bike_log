@@ -211,8 +211,19 @@ class DatabaseUtils:
     def get_ids(table_name):
         ids = DatabaseUtils.db.get_ids(table_name)
         LogUtils.logger.info(f"IDs retrieved from {table_name}")
+        #convert tuple to list
+        ids = [id[0] for id in ids]
         return ids
 
+    #get all rows from a table
+    @staticmethod
+    @handle_errors("Get all rows")
+    def get_all_rows(table_name):
+        ids = DatabaseUtils.get_ids(table_name)
+        rows = [DatabaseUtils.get_row(table_name, id) for id in ids]
+        LogUtils.logger.info(f"Rows retrieved from {table_name}")
+        return rows
+    
 class MenuUtils:
     # setup menu
     menu = menu.user_terminal_input()
@@ -253,7 +264,8 @@ class MenuUtils:
     #convert user input to name list
     @staticmethod
     @handle_errors("User input to name conversion")
-    def convert_user_input_to_name(menu):
+    def convert_user_input_to_name():
+        menu = MenuUtils.get_menu_hierarchy()
         values = MenuUtils.get_user_input_values()
         return MenuUtils.convert_val_to_name(values, menu)
     
@@ -273,8 +285,7 @@ class MenuUtils:
                     crawl(item['submenus'], depth + 1)
         crawl(MenuUtils.get_menu_hierarchy())
 
-# quick test
-if __name__ == "__main__":
+def local_menu_code():
     DatabaseUtils.connect()
     MenuUtils.menu_crawl()
     DatabaseUtils.close_connection()
@@ -285,6 +296,27 @@ if __name__ == "__main__":
     print(input)
     #show list as names
     print(MenuUtils.convert_user_input_to_name(MenuUtils.get_menu_hierarchy()))
+
+
+# quick test
+if __name__ == "__main__":
+    #connect to database
+    DatabaseUtils.connect()
+    #get all ids from the bike table
+    ids = DatabaseUtils.get_ids("bike")
+    
+    #get the first id
+    id = ids[0]
+    print(id)
+    #get the row with the id
+    row = DatabaseUtils.get_row("bike", id)
+    #print the row
+    print(row)
+    #close the connection
+    DatabaseUtils.close_connection()
+    #log the program complete
+    LogUtils.logger.info("Program complete")
+
     
 
 
