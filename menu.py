@@ -3,6 +3,7 @@
 import os
 import log_config
 import json
+import tabulate
 
 from log_config import LogConfig
 log_config = LogConfig()
@@ -46,6 +47,9 @@ class user_terminal_input:
     def __init__(self):
         self.menu_hierarchy = self.get_menu()
         self.menu_tracker = []
+        self.menu_tracker_name = []
+        self.menu_position = []
+        self.return_word = 'back'
 
 
     #get menu hierarchy from json file config/menu_config.json
@@ -54,6 +58,12 @@ class user_terminal_input:
             data = json.load(file)
         return data['menu']
     
+    def set_tracker_name(self, list):
+        self.menu_tracker_name = list
+        
+    def get_tracker_name(self):
+        return self.menu_tracker_name
+
     def get_menu_hierarchy(self):
         return self.menu_hierarchy
     
@@ -64,24 +74,38 @@ class user_terminal_input:
         else:
             return True
 
-    def menu_crawl(self, list):
-        self.draw_menu(list)
-        user_selection = int(input('Enter a number to select a menu item: '))
-        if self.is_primitive(list[user_selection]):
-            print(f"Selected: {list[user_selection]['name']}")
-            self.menu_tracker.append(user_selection)
-        else:
-            self.menu_tracker.append(user_selection)
-            self.menu_crawl(list[user_selection]['submenus'])   
+    def get_user_input():
+        user_input = input('Enter a number to select a menu item: ')
+        return user_input
 
-    def draw_menu(self, list):
+    def draw_menu(list):
         print("--------------------------------")
         for number,menu_item in enumerate(list):
             print(f"| {number}. {menu_item['name']} ")
         print("--------------------------------")
 
-    def get_user_input(self):
-        self.menu_crawl(self.menu_hierarchy)
+    def menu_navigation(self, menu):
+        self.draw_menu(menu)
+        menu_items = []
+        for item in menu: 
+            menu_items.append(item['name'])
+        user_selection = int(self.get_user_input())
+        self.menu_position.append(user_selection)
+
+        if self.return_word == str.lower(menu_items[user_selection]):
+            self.menu_position.pop()
+            if len(self.menu_position) == 0:
+                return 0
+            return -1
+
+        elif self.is_primitive(menu[user_selection]):
+            print(f"Selected: {menu[user_selection]['name']}")
+        else:
+            if self.menu_navigation(menu[user_selection]['submenus']) ==-1:
+                self.menu_position.pop()
+                if self.menu_navigation(menu) == -1:
+                    self.menu_position.pop()
+                    return -1
 
     def user_input_values(self):
         return self.menu_tracker
@@ -93,14 +117,19 @@ class user_terminal_input:
             return list
         else:
             list.append(menu[menu_track[0]]['name'])
-            self.convert_val_to_name(menu_track[1:], menu[menu_track[0]]['submenus'], list)
-    
+            self.convert_val_to_name(menu_track[1:], menu[menu_track[0]]['submenus'], list)        
+
+    #display table
+    def display_table(self, table_data):
+        print(tabulate.tabulate(table_data,  headers='keys', tablefmt="grid"))
+
 if __name__ == "__main__":
-    user_input = user_terminal_input()
-    user_input.get_user_input()
-    selected_menu = user_input.show_menu_item()
-    print(user_input.user_input_values())
-    print(selected_menu)
+    #user_input = user_terminal_input()
+    #user_input.get_user_input()
+    #selected_menu = user_input.show_menu_item()
+    #print(user_input.user_input_values())
+    #print(selected_menu)
+
 
 
     
