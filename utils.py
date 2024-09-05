@@ -12,6 +12,7 @@ import csv
 import menu
 from error_handling import handle_errors
 
+
 import log_config
 
 class LogUtils:
@@ -240,9 +241,28 @@ class MenuUtils:
     @staticmethod
     @handle_errors("User input")
     def get_user_input():
-        MenuUtils.menu.get_user_input()
+        MenuUtils.menu.menu_navigation(MenuUtils.get_menu_hierarchy())
         LogUtils.logger.info("User input retrieved")
-        return MenuUtils.get_user_input_values()
+        MenuUtils.user_input_to_name()
+    
+    #user selection is db
+    @staticmethod
+    @handle_errors("User selection is database")
+    def user_selection_type():
+        #if name ends in _db, return true
+        option = MenuUtils.menu.get_tracker_name()
+        if option[0].endswith('_db'): return 'db'
+        elif option[0].endswith('stats'): return 'stat'
+        #throw error
+        else: raise ValueError("Unkown selection type")
+    
+    #return the menu.menutrackername
+    @staticmethod
+    @handle_errors("retrieve submenu")
+    def get_submenu_options():
+        #all but the first item
+        return MenuUtils.menu.get_tracker_name()[1:]
+#WAS HERE
 
     #get user input values
     @staticmethod
@@ -264,10 +284,10 @@ class MenuUtils:
     #convert user input to name list
     @staticmethod
     @handle_errors("User input to name conversion")
-    def convert_user_input_to_name():
+    def user_input_to_name():
         menu = MenuUtils.get_menu_hierarchy()
         values = MenuUtils.get_user_input_values()
-        return MenuUtils.convert_val_to_name(values, menu)
+        MenuUtils.menu.set_tracker_name(MenuUtils.convert_val_to_name(values, menu))
     
     #crawl through each menu item and print like the following
     # item 1
@@ -284,7 +304,14 @@ class MenuUtils:
                 if 'submenus' in item:
                     crawl(item['submenus'], depth + 1)
         crawl(MenuUtils.get_menu_hierarchy())
-
+    
+    #display table
+    @staticmethod
+    @handle_errors("Table display")
+    def display_table(table_data):
+        MenuUtils.menu.display_table(table_data)
+        LogUtils.logger.info("Table displayed")
+    
 def local_menu_code():
     DatabaseUtils.connect()
     MenuUtils.menu_crawl()
@@ -297,10 +324,8 @@ def local_menu_code():
     #show list as names
     print(MenuUtils.convert_user_input_to_name(MenuUtils.get_menu_hierarchy()))
 
-
-# quick test
-if __name__ == "__main__":
-    #connect to database
+def local_get_row():
+        #connect to database
     DatabaseUtils.connect()
     #get all ids from the bike table
     ids = DatabaseUtils.get_ids("bike")
@@ -316,6 +341,11 @@ if __name__ == "__main__":
     DatabaseUtils.close_connection()
     #log the program complete
     LogUtils.logger.info("Program complete")
+
+# quick test
+if __name__ == "__main__":
+    pass
+
 
     
 
