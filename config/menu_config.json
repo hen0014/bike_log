@@ -70,6 +70,52 @@
             ]
         },
         {
+            "name": "maintenance",
+            "submenus": [                
+                {
+                    "name": "view"
+                },
+                {
+                    "name": "add_entry"
+                },
+                {
+                    "name": "delet_entry"
+                },
+                {
+                    "name": "adjust_entry"
+                },
+                {
+                    "name": "export_csv"
+                },
+                {
+                    "name": "back"
+                }
+            ]
+        },
+        {
+            "name": "trips",
+            "submenus": [                
+                {
+                    "name": "view"
+                },
+                {
+                    "name": "add_entry"
+                },
+                {
+                    "name": "delet_entry"
+                },
+                {
+                    "name": "adjust_entry"
+                },
+                {
+                    "name": "export_csv"
+                },
+                {
+                    "name": "back"
+                }
+            ]
+        },
+        {
             "name": "stats",
             "submenus": [                
                 {
