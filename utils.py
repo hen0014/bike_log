@@ -12,7 +12,6 @@ import csv
 import menu
 from error_handling import handle_errors
 
-
 import log_config
 
 class LogUtils:
@@ -34,6 +33,21 @@ class LogUtils:
     @handle_errors
     def log_database_disconnected():
         LogUtils.logger.info("Database disconnected")
+    
+    @staticmethod
+    @handle_errors
+    def log_error(message):
+        LogUtils.logger.error(message)
+    
+    @staticmethod
+    @handle_errors
+    def log_warning(message):
+        LogUtils.logger.warning(message)
+    
+    @staticmethod
+    @handle_errors
+    def log_info(message):
+        LogUtils.logger.info(message)
 
 class DatabaseUtils:
     # setup database
@@ -252,10 +266,11 @@ class MenuUtils:
         #if name ends in _db, return true
         option = MenuUtils.menu.get_tracker_name()
         if option[0].endswith('_db'): return 'db'
-        elif option[0].endswith('stats'): return 'stat'
+        elif option[0] == 'stats': return 'stat'
+        elif option[0] == 'exit': return 'exit'
         #throw error
         else: raise ValueError("Unkown selection type")
-    
+
     #return the menu.menutrackername
     @staticmethod
     @handle_errors("retrieve submenu")
