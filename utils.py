@@ -241,7 +241,7 @@ class MenuUtils:
     @staticmethod
     @handle_errors("User input")
     def get_user_input():
-        MenuUtils.menu.menu_navigation(MenuUtils.get_menu_hierarchy())
+        MenuUtils.menu.cmd_navigate()
         LogUtils.logger.info("User input retrieved")
         MenuUtils.user_input_to_name()
     
@@ -275,19 +275,19 @@ class MenuUtils:
     #convert value to name
     @staticmethod
     @handle_errors("Value to name conversion")
-    def convert_val_to_name(menu_track, menu):
+    def convert_val_to_name():
         list = []
-        MenuUtils.menu.convert_val_to_name(menu_track, menu, list)
+        MenuUtils.menu.convert_val_to_name(MenuUtils.menu.user_input_values(), MenuUtils.get_menu_hierarchy(), list)
         LogUtils.logger.info("Value converted to name")
         return list
-    
+    #GOT TO HERE sort out why get tracker name if broaken
     #convert user input to name list
     @staticmethod
     @handle_errors("User input to name conversion")
     def user_input_to_name():
         menu = MenuUtils.get_menu_hierarchy()
         values = MenuUtils.get_user_input_values()
-        MenuUtils.menu.set_tracker_name(MenuUtils.convert_val_to_name(values, menu))
+        MenuUtils.menu.set_tracker_name(MenuUtils.convert_val_to_name())
     
     #crawl through each menu item and print like the following
     # item 1
@@ -312,36 +312,6 @@ class MenuUtils:
         MenuUtils.menu.display_table(table_data)
         LogUtils.logger.info("Table displayed")
     
-def local_menu_code():
-    DatabaseUtils.connect()
-    MenuUtils.menu_crawl()
-    DatabaseUtils.close_connection()
-    LogUtils.logger.info("Program complete")
-
-    #lets get the user input
-    input = MenuUtils.get_user_input()
-    print(input)
-    #show list as names
-    print(MenuUtils.convert_user_input_to_name(MenuUtils.get_menu_hierarchy()))
-
-def local_get_row():
-        #connect to database
-    DatabaseUtils.connect()
-    #get all ids from the bike table
-    ids = DatabaseUtils.get_ids("bike")
-    
-    #get the first id
-    id = ids[0]
-    print(id)
-    #get the row with the id
-    row = DatabaseUtils.get_row("bike", id)
-    #print the row
-    print(row)
-    #close the connection
-    DatabaseUtils.close_connection()
-    #log the program complete
-    LogUtils.logger.info("Program complete")
-
 # quick test
 if __name__ == "__main__":
     pass

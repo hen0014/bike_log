@@ -48,7 +48,6 @@ class user_terminal_input:
         self.menu_hierarchy = self.get_menu()
         self.menu_tracker = []
         self.menu_tracker_name = []
-        self.menu_position = []
         self.return_word = 'back'
 
 
@@ -74,27 +73,40 @@ class user_terminal_input:
         else:
             return True
 
-    def get_user_input():
+    def get_user_input(self):
         user_input = input('Enter a number to select a menu item: ')
         return user_input
 
-    def draw_menu(list):
+    def draw_menu(self, list):
         print("--------------------------------")
         for number,menu_item in enumerate(list):
             print(f"| {number}. {menu_item['name']} ")
         print("--------------------------------")
 
+    def cmd_navigate(self):
+        #navigate the menu
+        self.clear_navigation()
+        self.menu_navigation(self.menu_hierarchy)
+        return self.menu_tracker
+
+    def clear_navigation(self):
+        #clears the menu tracker
+        self.menu_tracker = []
+        self.menu_tracker_name = []
+
     def menu_navigation(self, menu):
+        
         self.draw_menu(menu)
         menu_items = []
         for item in menu: 
             menu_items.append(item['name'])
         user_selection = int(self.get_user_input())
-        self.menu_position.append(user_selection)
+        self.menu_tracker.append(user_selection)
+        self.print_navigation()
 
         if self.return_word == str.lower(menu_items[user_selection]):
-            self.menu_position.pop()
-            if len(self.menu_position) == 0:
+            self.menu_tracker.pop()
+            if len(self.menu_tracker) == 0:
                 return 0
             return -1
 
@@ -102,14 +114,19 @@ class user_terminal_input:
             print(f"Selected: {menu[user_selection]['name']}")
         else:
             if self.menu_navigation(menu[user_selection]['submenus']) ==-1:
-                self.menu_position.pop()
+                self.menu_tracker.pop()
                 if self.menu_navigation(menu) == -1:
-                    self.menu_position.pop()
+                    self.menu_tracker.pop()
                     return -1
+
+    def print_navigation(self):
+        list = []
+        self.convert_val_to_name(self.menu_tracker, self.menu_hierarchy, list)
+        print(list)
 
     def user_input_values(self):
         return self.menu_tracker
-    
+
     def convert_val_to_name(self, menu_track, menu,list):
         #recursive function to get the menu item from the menu hierarchy
         if len(menu_track[1:]) == 0:
@@ -129,9 +146,4 @@ if __name__ == "__main__":
     #selected_menu = user_input.show_menu_item()
     #print(user_input.user_input_values())
     #print(selected_menu)
-
-
-
-    
-    
-        
+    pass
