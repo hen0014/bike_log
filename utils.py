@@ -277,7 +277,6 @@ class MenuUtils:
     def get_submenu_options():
         #all but the first item
         return MenuUtils.menu.get_tracker_name()[1:]
-#WAS HERE
 
     #get user input values
     @staticmethod
