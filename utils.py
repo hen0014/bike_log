@@ -343,7 +343,18 @@ class MenuUtils:
         MenuUtils.display_table(keys)
         LogUtils.logger.info(f"Table headers displayed for {table_name}")
 
-    
+    #ask user for an input for each table row heading
+    @staticmethod
+    @handle_errors("Row input")
+    def get_entry_input(table_name):
+        LogUtils.logger.info(f"Getting row input for {table_name}")
+        keys = DatabaseUtils.get_table_keys(table_name)
+        data = {'id': None}
+        for key in keys:
+            data[key] = input(f"Enter {key}: ")
+        
+        LogUtils.logger.info(f"user input for {table_name} is {data}")
+        return data
 # quick test
 if __name__ == "__main__":
     pass

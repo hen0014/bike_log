@@ -56,6 +56,14 @@ class TestMenu(unittest.TestCase):
             result = self.menu.get_selected_db_name()
             self.assertEqual(result.lower(), 'bike_db')
 
+        @patch('builtins.input', side_effect=['0','0','0','0','0','0','0','0','0','0','0','0'])
+        def test_user_input_add(self, mock_input):
+            print("test_user_input")
+            # patch different input
+            user_selection = self.menu.get_entry_input('bike')
+            print(user_selection)
+
+
 
 if __name__ == '__main__':
     unittest.main()

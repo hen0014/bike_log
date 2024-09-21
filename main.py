@@ -41,9 +41,13 @@ def top_level_arbitration(menu_obj, bike_db):
 def db_arbitration(menu_obj, bike_db):
     #is input a db command?
     if menu_obj.get_submenu_options() == "add":
-        menu_obj.display_table(menu_obj.get_selected_db_name())
-        pass
+        menu_obj.display_table_headers(menu_obj.get_selected_db_name())
+        new_row_data = menu_obj.get_entry_input(menu_obj.get_selected_db_name())
+        bike_db.add_row(menu_obj.get_selected_db_name(), new_row_data)
+        
     elif menu_obj.get_submenu_options() == "view":
+        #show table for selected db
+        menu_obj.display_table(menu_obj.get_selected_db_name())
         pass
     elif menu_obj.get_submenu_options() == "delete":
         pass
