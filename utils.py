@@ -271,6 +271,15 @@ class MenuUtils:
         #throw error
         else: raise ValueError("Unkown selection type")
 
+    #return user chosen db option
+    @staticmethod
+    @handle_errors("User selection")
+    def get_selected_db_name():
+        if MenuUtils.user_selection_type() != 'db': raise ValueError("Not a db selection")
+        elif MenuUtils.user_selection_type() == 'db': return MenuUtils.menu.get_tracker_name()[0]
+        else: raise ValueError("none db selection")
+        
+
     #return the menu.menutrackername
     @staticmethod
     @handle_errors("retrieve submenu")
@@ -325,6 +334,15 @@ class MenuUtils:
     def display_table(table_data):
         MenuUtils.menu.display_table(table_data)
         LogUtils.logger.info("Table displayed")
+    
+    #display table headers
+    @staticmethod
+    @handle_errors("Table headers display")
+    def display_table_headers(table_name):
+        keys = DatabaseUtils.get_table_keys(table_name)
+        MenuUtils.display_table(keys)
+        LogUtils.logger.info(f"Table headers displayed for {table_name}")
+
     
 # quick test
 if __name__ == "__main__":

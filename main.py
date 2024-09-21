@@ -17,15 +17,16 @@ def main():
     while True:
         #ask user for input
         user_input.get_user_input()
-        top_level_arbitration(user_input)
+        top_level_arbitration(user_input, bike_db)
         #if user wants to exit, break the loop
     
 
 #make choice for db
 @handle_errors(custom_info="top_level_arbitration decision")
-def top_level_arbitration(menu_obj):
+def top_level_arbitration(menu_obj, bike_db):
     #is input a db command?
     if menu_obj.user_selection_type() == "db":
+        db_arbitration(menu_obj, bike_db)
         pass
     elif menu_obj.user_selection_type() == "stat":
         pass
@@ -37,17 +38,18 @@ def top_level_arbitration(menu_obj):
 
 #function to arbitrage db command execution
 @handle_errors(custom_info="db_arbitration")
-def db_arbitration(menu_obj):
+def db_arbitration(menu_obj, bike_db):
     #is input a db command?
-    if menu_obj.user_selection_type() == "add":
+    if menu_obj.get_submenu_options() == "add":
+        menu_obj.display_table(menu_obj.get_selected_db_name())
         pass
-    elif menu_obj.user_selection_type() == "view":
+    elif menu_obj.get_submenu_options() == "view":
         pass
-    elif menu_obj.user_selection_type() == "delete":
+    elif menu_obj.get_submenu_options() == "delete":
         pass
-    elif menu_obj.user_selection_type() == "update":
+    elif menu_obj.get_submenu_options() == "update":
         pass
-    elif menu_obj.user_selection_type() == "exit":
+    elif menu_obj.get_submenu_options() == "exit":
         raise SystemExit
     else:
         #if not, display an error message

@@ -42,6 +42,19 @@ class TestMenu(unittest.TestCase):
             print(self.menu.convert_val_to_name())
             self.assertEqual(self.menu.convert_val_to_name(), ['charge_db', 'add_entry'])
         
+        # test get user db selection function with mock input
+        @patch('builtins.input', side_effect=['0','0'])
+        def test_user_selection_type(self, mock_input):
+            user_input = self.menu.get_user_input()
+            result = self.menu.user_selection_type()
+            self.assertEqual(result, 'db')
+        
+        # test retrieval of selected db name
+        @patch('builtins.input', side_effect=['0','0'])
+        def test_get_selected_db_name(self, mock_input):
+            user_input = self.menu.get_user_input()
+            result = self.menu.get_selected_db_name()
+            self.assertEqual(result.lower(), 'bike_db')
 
 
 if __name__ == '__main__':
