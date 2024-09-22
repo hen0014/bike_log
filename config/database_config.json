@@ -259,5 +259,10 @@
             }
         ]
     }
+    ],
+    "protected_fields": [
+        "charge_cost",
+        "entry_date",
+        "entry_type"
     ]
 }

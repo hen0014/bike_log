@@ -229,7 +229,7 @@ class DatabaseUtils:
         #convert tuple to list
         ids = [id[0] for id in ids]
         return ids
-
+    
     #get all rows from a table
     @staticmethod
     @handle_errors("Get all rows")
@@ -276,7 +276,10 @@ class MenuUtils:
     @handle_errors("User selection")
     def get_selected_db_name():
         if MenuUtils.user_selection_type() != 'db': raise ValueError("Not a db selection")
-        elif MenuUtils.user_selection_type() == 'db': return MenuUtils.menu.get_tracker_name()[0]
+        elif MenuUtils.user_selection_type() == 'db': 
+            #trim sting to remove _db
+            return MenuUtils.menu.get_tracker_name()[0][:-3]
+        
         else: raise ValueError("none db selection")
         
 
@@ -340,8 +343,136 @@ class MenuUtils:
     @handle_errors("Table headers display")
     def display_table_headers(table_name):
         keys = DatabaseUtils.get_table_keys(table_name)
-        MenuUtils.display_table(keys)
+        MenuUtils.menu.draw_menu(keys)
         LogUtils.logger.info(f"Table headers displayed for {table_name}")
+
+    #menu for deletion
+    @staticmethod
+    @handle_errors("Deletion menu")
+    def delete_menu(table_name):
+        #ask user if they want to show the table
+        show_table = input("Do you want to show the table first? (y/n): ")
+        if show_table.lower() == 'y':
+            ids = DatabaseUtils.get_ids(table_name)
+            for id in ids:
+                row = DatabaseUtils.get_row(table_name, id)
+                print(f"ID: {id} - {row}")
+        elif show_table.lower() != 'n':
+            raise ValueError("Invalid input. Please try again.")
+        id = input("Enter ID to delete: ")
+        DatabaseUtils.delete_row(table_name, id)
+        LogUtils.logger.info(f"Row deleted from {table_name}")
+
+    #check if list is unique
+    @staticmethod
+    @handle_errors("List uniqueness check")
+    def is_list_unique(list):
+        unique_input_store = []
+        none_unique_list = []
+        for item in list:
+            if item in unique_input_store:
+                if item not in none_unique_list:
+                    none_unique_list.append(item)
+            unique_input_store.append(item)
+        
+        return none_unique_list
+
+    #get id from user
+    @staticmethod
+    @handle_errors("ID retrieval")
+    def get_id(table_name):
+        user_input = menu.get_id()
+        row = DatabaseUtils.get_row(table_name, user_input)
+        menu.print_row(row)
+        return row['id']
+
+    #do all items in list a exist in list b
+    @staticmethod
+    @handle_errors("List comparison")
+    def is_list_in_list(list_a, list_b):      
+        for item in list_a:
+            if item not in list_b:
+                return True
+        return False
+    
+    #replace list of numbers to list of keys
+    @staticmethod
+    @handle_errors("Key conversion")
+    def convert_numbers_to_keys(row, numbers):
+        keys = []
+        for number in numbers:
+            keys.append(row[int(number)])
+        return keys
+
+    #get keys to edit
+    @staticmethod
+    @handle_errors("Key selection")
+    def get_keys_to_edit(row):
+        keys_to_edit = menu.select_items_from_list(row.keys())
+        human_readable_keys = MenuUtils.convert_numbers_to_keys(row, keys_to_edit)
+        if MenuUtils.is_list_in_list(human_readable_keys, row.keys()):
+            raise ValueError("selected item not in list. Please try again.")
+        
+        #check for double entries by checking all values are unique
+        if MenuUtils.is_list_unique(keys_to_edit):
+            raise ValueError("Double entries detected. Please try again.")
+        
+        return human_readable_keys
+        
+    #from keys to edit list ask the user for new values and return a dictionary
+    @staticmethod
+    @handle_errors("New values input")
+    def get_new_values(row, keys_to_edit):
+        new_values = {}
+        for key in keys_to_edit:
+            new_values[row[int(key)]] = input(f"Enter new value for {row[int(key)]}: ")
+        return new_values
+
+    #adjust row dictionary with matching key in new_values
+    @staticmethod
+    @handle_errors("Row adjustment")
+    def adjust_row(row, new_values):
+        for key in new_values:
+            row[key] = new_values[key]
+        return row
+
+    #menu for editing a row
+    @staticmethod
+    @handle_errors("Edit menu")
+    def edit_menu(table_name):
+        #ask user if they want to show the table
+        
+        if menu.show_table():
+            ids = DatabaseUtils.get_ids(table_name)
+            for id in ids:
+                row = DatabaseUtils.get_row(table_name, id)
+                menu.print_row(row)
+        else:
+            return None
+        
+        id = menu.get_id()
+        row = DatabaseUtils.get_row(table_name, id)
+        keys_to_be_edited = menu.get_keys_to_edit(row)
+        new_data = menu.get_new_values(row, keys_to_be_edited)
+        adjusted_row = menu.adjust_row(row, new_data)
+        
+        DatabaseUtils.edit_row(table_name, adjusted_row)
+        LogUtils.logger.info(f"Row edited in {table_name}")
+
+    #function to list bikes
+    @staticmethod
+    @handle_errors("List bikes")
+    def get_bike_id():
+        bikes = DatabaseUtils.get_all_rows('bike')
+        #only display the bike id and name
+        bikes = [{k: v for k, v in bike.items() if k in ['id', 'bike_name']} for bike in bikes]
+        #add number to each bike
+        for count, bike in enumerate(bikes):
+            bike['number'] = count
+        #display bikes
+        MenuUtils.display_table(bikes)
+        user_selection = MenuUtils.menu.get_user_input()
+        return bikes[int(user_selection)]['id']
 
     #ask user for an input for each table row heading
     @staticmethod
@@ -351,7 +482,10 @@ class MenuUtils:
         keys = DatabaseUtils.get_table_keys(table_name)
         data = {'id': None}
         for key in keys:
-            data[key] = input(f"Enter {key}: ")
+            if key == 'bike_id':
+                #display bikes
+                data[key] = MenuUtils.get_bike_id()
+            else: data[key] = input(f"Enter {key}: ")
         
         LogUtils.logger.info(f"user input for {table_name} is {data}")
         return data

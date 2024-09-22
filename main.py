@@ -40,20 +40,29 @@ def top_level_arbitration(menu_obj, bike_db):
 @handle_errors(custom_info="db_arbitration")
 def db_arbitration(menu_obj, bike_db):
     #is input a db command?
-    if menu_obj.get_submenu_options() == "add":
-        menu_obj.display_table_headers(menu_obj.get_selected_db_name())
-        new_row_data = menu_obj.get_entry_input(menu_obj.get_selected_db_name())
-        bike_db.add_row(menu_obj.get_selected_db_name(), new_row_data)
+    user_sub_selection = menu_obj.get_submenu_options()[0]
+    
+    if user_sub_selection == "add_entry":
+        table_name = menu_obj.get_selected_db_name()
+        menu_obj.display_table_headers(table_name)
+        new_row_data = menu_obj.get_entry_input(table_name)
+        bike_db.add_row(table_name, new_row_data)
         
-    elif menu_obj.get_submenu_options() == "view":
-        #show table for selected db
-        menu_obj.display_table(menu_obj.get_selected_db_name())
-        pass
-    elif menu_obj.get_submenu_options() == "delete":
-        pass
-    elif menu_obj.get_submenu_options() == "update":
-        pass
-    elif menu_obj.get_submenu_options() == "exit":
+    elif user_sub_selection == "view":
+        #show table for selected db. display_table(get_table(user selection))
+        table_name = menu_obj.get_selected_db_name()
+        table_data = bike_db.get_all_rows(table_name)
+        menu_obj.display_table(table_data)
+
+    elif user_sub_selection == "delet_entry":
+        table_name = menu_obj.get_selected_db_name()
+        menu_obj.delete_menu(table_name)
+        
+    elif user_sub_selection == "adjust_entry":
+        table_name = menu_obj.get_selected_db_name()
+        menu_obj.edit_menu(table_name)
+        
+    elif user_sub_selection == "exit":
         raise SystemExit
     else:
         #if not, display an error message

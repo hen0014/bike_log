@@ -79,9 +79,15 @@ class user_terminal_input:
 
     def draw_menu(self, list):
         print("--------------------------------")
-        for number,menu_item in enumerate(list):
-            print(f"| {number}. {menu_item['name']} ")
-        print("--------------------------------")
+        #check if list is a dictionary
+        if isinstance(list[0], dict):
+            for number,menu_item in enumerate(list):
+                print(f"| {number}. {menu_item['name']} ")
+            print("--------------------------------")
+        else:
+            for number,menu_item in enumerate(list):
+                print(f"| {number}. {menu_item}")
+            print("--------------------------------")
 
     def cmd_navigate(self):
         #navigate the menu
@@ -139,6 +145,37 @@ class user_terminal_input:
     #display table
     def display_table(self, table_data):
         print(tabulate.tabulate(table_data,  headers='keys', tablefmt="grid"))
+
+    #display table headers in table
+    def display_table_headers(self, headings):
+        print(tabulate.tabulate([headings], headers='keys', tablefmt="grid"))
+    #get new row values
+    def get_entry_input(self, keys):     
+        new_row_data = {}
+        for key in keys:
+            new_row_data[key] = input(f"Enter {key}: ")
+        return new_row_data
+    
+    #ask user select items in list to edit
+    def select_items_from_list(self, list):
+        self.draw_menu(list)
+        user_input = input("Enter a space seperated list of numbers of field to edit: ")
+        return user_input.split(" ")
+    
+    #ask user to show table
+    def show_table(self):
+        result = input("Do you want to show the table first? (y/n): ")
+        if result.lower() == 'y':
+            return True
+        else:
+            return False
+    #row printer
+    def print_row(self, row):
+        print(f"ID: {row['id']} - {dict(list(row.items())[1:])}")
+
+    #ask for id
+    def get_id(self):
+        return int(input("Enter the ID of the row: "))
 
 if __name__ == "__main__":
     #user_input = user_terminal_input()

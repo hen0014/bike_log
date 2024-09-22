@@ -24,7 +24,7 @@
             ]
         },
         {
-            "name": "charge_db",
+            "name": "ebike_charge_db",
             "submenus": [                
                 {
                     "name": "view"

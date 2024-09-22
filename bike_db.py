@@ -29,12 +29,19 @@ class BikeDatabase:
         self.conn = sqlite3.connect(self.db_file)
         self.c = self.conn.cursor()
         self.create_table(self.get_tables())
+        self.protected = self.get_protected_fields()
     
     #get tables from json file database_config.json
     def get_tables(self):
         with open('config/database_config.json', 'r') as file:
             data = json.load(file)
         return data['tables']
+
+    #get a list of fields from json file that cant be edited by the user
+    def get_protected_fields(self):
+        with open('config/database_config.json', 'r') as file:
+            data = json.load(file)
+        return data['protected_fields']
 
     #create tables if they dont exist
     def create_table(self, tables):
@@ -128,7 +135,8 @@ class BikeDatabase:
     #add entry to a table ensuring input is a dictionary
     def add_entry(self, table, data):
         if self.is_dict(data):
-            data['id'] = str(uuid.uuid4())
+            if data['id'] == '':
+                data['id'] = str(uuid.uuid4())
             self.c.execute(f"INSERT INTO {table} VALUES ({', '.join(['?']*len(data))})", tuple(data.values()))
             self.conn.commit()
             return [data['id']]
