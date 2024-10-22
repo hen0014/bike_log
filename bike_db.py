@@ -80,9 +80,9 @@ class BikeDatabase:
         self.c.execute(f"SELECT * FROM {table}")
         data = self.c.fetchall()
         headings = self.get_table_keys(table)
-        data_dict = {}
+        data_dict = []
         for row in data:
-            data_dict[row[0]] = dict(zip(headings, row))
+            data_dict.append(dict(zip(headings, row))) 
         return data_dict
     
     #retreive all ids from a table

@@ -61,7 +61,11 @@ def db_arbitration(menu_obj, bike_db):
     elif user_sub_selection == "adjust_entry":
         table_name = menu_obj.get_selected_db_name()
         menu_obj.edit_menu(table_name)
-        
+    
+    elif user_sub_selection == "export_csv":
+        table_name = menu_obj.get_selected_db_name()
+        bike_db.export_table(table_name, f'{table_name}.csv')
+
     elif user_sub_selection == "exit":
         raise SystemExit
     else:

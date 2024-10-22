@@ -178,9 +178,9 @@ class DatabaseUtils:
         data = DatabaseUtils.db.dump_table_dic(table_name)
         if data:
             with open(export_file, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(data.keys())  # Write the keys as the first row
-                writer.writerows(data.values())  # Write the values as subsequent rows
+                writer = csv.DictWriter(csvfile, data[0].keys())
+                writer.writeheader()  # Write the keys as the header
+                writer.writerows(data)  # Write the values as subsequent rows
             LogUtils.logger.info("Table data exported as CSV")
         else:
             LogUtils.logger.warning("No data available to export")
