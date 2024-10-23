@@ -104,8 +104,9 @@ class DatabaseUtils:
     #add row to table, ensure keys match table headers
     @staticmethod
     @handle_errors("Row addition")
-    def add_row(table_name, data):
+    def add_row(table_name, data, type):
         if not DatabaseUtils.key_and_table_heading_compare_dic(table_name, data): return None
+        data['entry_type'] = type
         new_id = DatabaseUtils.db.add_entry(table_name, data)
         LogUtils.logger.info(f"Row added to {table_name}")
         return new_id
@@ -145,6 +146,18 @@ class DatabaseUtils:
         if not DatabaseUtils.key_and_table_heading_compare_csv(table_name, import_file): LogUtils.logger.error("Keys do not match table headings"); return False        
         return True
 
+    #adjust element highlighted as type
+    @staticmethod
+    @handle_errors("type Element adjustment")
+    def set_import_type(table):
+        #get position of entry_type in row
+        table_tmp = []
+        for row in table:
+            #edit all entry_type to import
+            tmp = row['entry_type'] = 'import'
+            table_tmp.append(tmp)
+        return table_tmp
+
     #import csv to table
     @staticmethod
     @handle_errors("Table data import")
@@ -158,13 +171,16 @@ class DatabaseUtils:
             # read the first row as the keys
             keys = next(reader)
             # read the rest of the rows as the values
-            values = [row for row in reader]
-            
+            #data = [DatabaseUtils.row_to_dict(table_name, row) for row in reader]
+            for row in reader:
+                dict_row = DatabaseUtils.row_to_dict(table_name, row)
+                #add row
+                DatabaseUtils.add_row(table_name, dict_row, 'import')
             #1by1 commands
             #combine keys and values into a dictionary
-            DatabaseUtils.row_to_dict(table_name, values)
+            
 
-        DatabaseUtils.db.import_table(table_name, keys, values)
+        #DatabaseUtils.db.import_table(table_name, keys, values)
         LogUtils.logger.info("Table data imported from CSV")
     
     #import table but drop table first
