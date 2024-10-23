@@ -159,6 +159,11 @@ class DatabaseUtils:
             keys = next(reader)
             # read the rest of the rows as the values
             values = [row for row in reader]
+            
+            #1by1 commands
+            #combine keys and values into a dictionary
+            DatabaseUtils.row_to_dict(table_name, values)
+
         DatabaseUtils.db.import_table(table_name, keys, values)
         LogUtils.logger.info("Table data imported from CSV")
     
@@ -441,20 +446,19 @@ class MenuUtils:
     @handle_errors("Edit menu")
     def edit_menu(table_name):
         #ask user if they want to show the table
-        
-        if menu.show_table():
+        if MenuUtils.menu.show_table():
             ids = DatabaseUtils.get_ids(table_name)
             for id in ids:
                 row = DatabaseUtils.get_row(table_name, id)
-                menu.print_row(row)
+                MenuUtils.menu.print_row(row)
         else:
             return None
         
-        id = menu.get_id()
+        id = MenuUtils.menu.get_id()
         row = DatabaseUtils.get_row(table_name, id)
-        keys_to_be_edited = menu.get_keys_to_edit(row)
-        new_data = menu.get_new_values(row, keys_to_be_edited)
-        adjusted_row = menu.adjust_row(row, new_data)
+        keys_to_be_edited = MenuUtils.get_keys_to_edit(row)
+        new_data = MenuUtils.get_new_values(row, keys_to_be_edited)
+        adjusted_row = MenuUtils.adjust_row(row, new_data)
         
         DatabaseUtils.edit_row(table_name, adjusted_row)
         LogUtils.logger.info(f"Row edited in {table_name}")

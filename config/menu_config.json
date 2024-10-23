@@ -1,7 +1,7 @@
 {
     "menu": [
         {
-            "name": "Bike_db",
+            "name": "bike_db",
             "submenus": [
                 {
                     "name": "view"
@@ -17,6 +17,9 @@
                 },
                 {
                     "name": "export_csv"
+                },
+                {
+                    "name": "import_csv"
                 },
                 {
                     "name": "back"
@@ -42,6 +45,9 @@
                     "name": "export_csv"
                 },
                 {
+                    "name": "import_csv"
+                },
+                {
                     "name": "back"
                 }
             ]
@@ -63,6 +69,9 @@
                 },
                 {
                     "name": "export_csv"
+                },
+                {
+                    "name": "import_csv"
                 },
                 {
                     "name": "back"
@@ -88,12 +97,15 @@
                     "name": "export_csv"
                 },
                 {
+                    "name": "import_csv"
+                },
+                {
                     "name": "back"
                 }
             ]
         },
         {
-            "name": "trips",
+            "name": "trips_db",
             "submenus": [                
                 {
                     "name": "view"
@@ -109,6 +121,9 @@
                 },
                 {
                     "name": "export_csv"
+                },
+                {
+                    "name": "import_csv"
                 },
                 {
                     "name": "back"
