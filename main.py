@@ -46,7 +46,7 @@ def db_arbitration(menu_obj, bike_db):
         table_name = menu_obj.get_selected_db_name()
         menu_obj.display_table_headers(table_name)
         new_row_data = menu_obj.get_entry_input(table_name)
-        bike_db.add_row(table_name, new_row_data)
+        bike_db.add_row(table_name, new_row_data, "script")
         
     elif user_sub_selection == "view":
         #show table for selected db. display_table(get_table(user selection))
