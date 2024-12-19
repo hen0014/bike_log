@@ -40,6 +40,10 @@
                 "type": "real"
             },
             {
+                "name": "purchase_date",
+                "type":"text"
+            },
+            {
                 "name": "odo",
                 "type": "real"
             },
