@@ -97,6 +97,10 @@
                 "type": "real"
             },
             {
+                "name": "odo",
+                "type": "int"
+            },
+            {
                 "name": "rides_per_charge",
                 "type": "int"
             }
