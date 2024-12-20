@@ -101,6 +101,14 @@ class DatabaseUtils:
         table_keys = DatabaseUtils.db.get_table_keys(table_name)
         return list(data.keys()) == table_keys
 
+    #queery config file for information on if the table entry is a user input or not
+    @staticmethod
+    @handle_errors("Entry type retrieval")
+    def get_entry_type(table_name):
+        entry_type = DatabaseUtils.db.get_entry_type(table_name)
+        LogUtils.logger.info(f"Entry type retrieved for {table_name}")
+        return entry_type
+
     #add row to table, ensure keys match table headers
     @staticmethod
     @handle_errors("Row addition")
@@ -505,6 +513,7 @@ class MenuUtils:
             if key == 'bike_id':
                 #display bikes
                 data[key] = MenuUtils.get_bike_id()
+            #if keys field type is input = False, skip
             else: data[key] = input(f"Enter {key}: ")
         
         LogUtils.logger.info(f"user input for {table_name} is {data}")

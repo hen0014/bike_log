@@ -28,8 +28,10 @@ class BikeDatabase:
         #create db connection
         self.conn = sqlite3.connect(self.db_file)
         self.c = self.conn.cursor()
-        self.create_table(self.get_tables())
+        self.table_raw_data = self.get_tables()
+        self.create_table(self.table_raw_data)
         self.protected = self.get_protected_fields()
+        self.create_protected_fields()
     
     #get tables from json file database_config.json
     def get_tables(self):
@@ -42,6 +44,18 @@ class BikeDatabase:
         with open('config/database_config.json', 'r') as file:
             data = json.load(file)
         return data['protected_fields']
+
+    #if write protected field tables for each table does not exist, create them using the json file items protected_fields
+    def create_protected_fields(self):
+        #create a new table if it does not exists with the _protected suffix
+        for table in self.table_raw_data:
+            if table['name'] + '_protected' not in self.get_table_names():
+                self.c.execute(f"CREATE TABLE IF NOT EXISTS {table['name']}_protected ({', '.join([f'{columns["name"]} TEXT' for columns in table['columns']])})")
+                #populate all columns with true if the column name exists in the protected fields list all in one row
+                self.c.execute(f"INSERT INTO {table['name']}_protected VALUES ({', '.join(['?' for columns in table['columns']])})", tuple(["true" if columns['name'] in self.protected else "false" for columns in table['columns']]))
+
+                self.conn.commit()
+    
 
     #create tables if they dont exist
     def create_table(self, tables):
@@ -144,6 +158,14 @@ class BikeDatabase:
             print('Invalid data')
             return 1
     
+    #get entry type from config file
+    def get_entry_type(self, table):
+        with open('config/database_config.json', 'r') as file:
+            data = json.load(file)
+        for item in data['tables']:
+            if item['name'] == table:
+                return item['entry_type']
+
     #change entry in a table
     def change_entry(self, table, data):
         if self.is_dict(data):
